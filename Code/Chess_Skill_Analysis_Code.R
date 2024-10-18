@@ -1,7 +1,8 @@
+#Loading libraries
 library(readxl)
 library(rvest)
 
-
+#Creating database from raw data
 data_base = matrix(0,nrow=1e4,ncol=10)
 data_base = as.data.frame(data_base)
 
@@ -251,6 +252,7 @@ data_base[868:1279,]=fwc21
 data_base = read.csv("Chess_Database_Classical.csv")
 d = data_base[1:1274,-1]
 
+#Transforming data for easier interpretation
 d[,3] = d[,3]/80
 d[,7] = d[,7]/80
 d[,4] = d[,4]/3000
@@ -300,6 +302,7 @@ probab = function(age_w,age_b,rating_w,rating_b)
   return(prob)
 }
 
+#Finding fitted probabilities
 check = matrix(0,nrow=64,ncol=6)
 check[,1] = c(rep(20,32),rep(35,32))
 check[,2] = c(rep(20,16),rep(35,16),rep(20,16),rep(35,16))
@@ -329,6 +332,7 @@ fitnew <- vglm(Result_White~White_Age + White_Rating + Black_Age + Black_Rating,
 
 check = cbind(fitted(test),d$White_Age,d$White_Rating,d$Black_Age,d$Black_Rating)
 
+#Finding class differences
 c = 0
 c1 = 0
 for(i in 1:1274)
@@ -362,7 +366,7 @@ d = read.csv("Chess_Database_Classical.csv")[,-1]
 d1 = d[,2:4]
 
 library(ggplot2)
-
+#Plotting for EDA
 scatterplot <- ggplot(d1, aes(x = White_Age, y = White_Rating)) +
   geom_point(color = "black", size = 2) + # Customize points
   labs(title = "Scatterplot of Age v/s Rating",      # Title
@@ -390,7 +394,7 @@ histogram2 <- ggplot(d1, aes(x = White_Rating)) +
 print(histogram2)
 
 
-
+#Fitting the final parsimonious prediction models
 levels(d$Result_White) = c("1","0.5","0")
 library(nnet)
 test <- multinom(Result_White ~ White_Age +White_Rating + Black_Age + Black_Rating, data = d)
